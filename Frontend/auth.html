@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hp-top — Sign in</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #eef2ff 0%, #fce7f3 100%);
+    }
+
+    .card {
+      width: 400px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 2rem;
+      border: 0.5px solid #e8ddf5;
+      box-shadow: 0 8px 40px rgba(120, 80, 180, 0.10);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #7c5fcb, #e072a4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .toggle-wrap {
+      display: flex;
+      background: #f3f0fa;
+      border-radius: 50px;
+      padding: 4px;
+      margin-bottom: 1.75rem;
+      position: relative;
+    }
+    .toggle-slider {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 50px;
+      transition: left 0.35s cubic-bezier(.4,0,.2,1),
+                  width 0.35s cubic-bezier(.4,0,.2,1),
+                  background 0.35s ease;
+    }
+    .toggle-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      border-radius: 50px;
+      padding: 10px 0;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      transition: color 0.35s ease;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #7a6e8a;
+      margin-bottom: 5px;
+      letter-spacing: 0.03em;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-wrap input {
+      width: 100%;
+      border: 1.5px solid #e4daf0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #2d1f3d;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fdfbff;
+    }
+    .input-wrap input.has-eye {
+      padding-right: 42px;
+    }
+    .input-wrap input:focus {
+      border-color: #8b6fcb;
+      box-shadow: 0 0 0 3px rgba(139, 111, 203, 0.13);
+    }
+    .input-wrap input::placeholder {
+      color: #c0b8d0;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      color: #b0a8c0;
+      flex-shrink: 0;
+      transition: color 0.2s;
+    }
+    .eye-btn:hover { color: #7a6e8a; }
+    .eye-btn svg { width: 18px; height: 18px; display: block; }
+
+    .err-field {
+      font-size: 11px;
+      color: #e04070;
+      margin-top: 4px;
+      min-height: 15px;
+      line-height: 1.3;
+    }
+
+    .req-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .req {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #8a7f9a;
+      transition: color 0.2s;
+    }
+    .req .icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      border: 1.5px solid #d0c8e0;
+      color: transparent;
+      transition: all 0.25s;
+      line-height: 1;
+    }
+    .req.ok .icon  { background: #22c97a; border-color: #22c97a; color: #fff; }
+    .req.fail .icon{ background: #ff4d6d; border-color: #ff4d6d; color: #fff; }
+    .req.ok  { color: #16a05a; }
+    .req.fail{ color: #cc2244; }
+
+    .match-msg {
+      font-size: 12px;
+      margin-top: 6px;
+      min-height: 16px;
+      transition: color 0.2s;
+    }
+
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      margin-top: 1.25rem;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .submit-btn:hover  { opacity: 0.91; }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn.login-btn  { background: linear-gradient(90deg, #6c4fcb, #a06fdd); }
+    .submit-btn.signup-btn { background: linear-gradient(90deg, #d45fa0, #f09ac0); }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo"><span class="logo-text">hp-top</span></div>
+
+  <div class="toggle-wrap" id="toggleWrap">
+    <div class="toggle-slider" id="toggleSlider"></div>
+    <button class="toggle-btn" id="btnLogin"  onclick="switchTab('login')">Log in</button>
+    <button class="toggle-btn" id="btnSignup" onclick="switchTab('signup')">Sign up</button>
+  </div>
+
+  <div id="loginForm">
+    <div class="field">
+      <label>Username or email</label>
+      <div class="input-wrap">
+        <input type="text" id="loginId" placeholder="Enter username or email" oninput="validateLogin()">
+      </div>
+      <div class="err-field" id="loginIdErr"></div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="loginPw" class="has-eye" placeholder="Enter password" oninput="validateLogin()">
+        <button class="eye-btn" onclick="togglePw('loginPw', this)" tabindex="-1" aria-label="Show password">
+          <svg id="loginPwIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="err-field" id="loginPwErr"></div>
+    </div>
+    <button class="submit-btn login-btn">Log in</button>
+  </div>
+
+  <div id="signupForm" style="display:none">
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <input type="text" id="regUser" placeholder="Only Latin letters" oninput="validateSignup()">
+      </div>
+      <div class="err-field" id="regUserErr"></div>
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <div class="input-wrap">
+        <input type="text" id="regMail" placeholder="your@email.com" oninput="validateSignup()">
+      </div>
+      <div class="err-field" id="regMailErr"></div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="regPw1" class="has-eye" placeholder="Create a password" oninput="validateSignup()">
+        <button class="eye-btn" onclick="togglePw('regPw1', this)" tabindex="-1" aria-label="Show password">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="req-list">
+        <div class="req" id="req-len">  <span class="icon" id="ic-len"></span>  At least 5 characters</div>
+        <div class="req" id="req-upper"><span class="icon" id="ic-upper"></span> At least one uppercase letter (A–Z)</div>
+        <div class="req" id="req-latin"><span class="icon" id="ic-latin"></span> Latin letters, digits and special characters only</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Confirm password</label>
+      <div class="input-wrap">
+        <input type="password" id="regPw2" class="has-eye" placeholder="Repeat password" oninput="validateSignup()">
+        <button class="eye-btn" onclick="togglePw('regPw2', this)" tabindex="-1" aria-label="Show password">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="match-msg" id="matchMsg"></div>
+    </div>
+    <button class="submit-btn signup-btn">Create account</button>
+  </div>
+</div>
+
+<script>
+
+  function switchTab(tab) {
+    const wrap   = document.getElementById('toggleWrap');
+    const slider = document.getElementById('toggleSlider');
+    const half   = (wrap.offsetWidth - 8) / 2;
+
+    if (tab === 'login') {
+      slider.style.left       = '4px';
+      slider.style.width      = half + 'px';
+      slider.style.background = 'linear-gradient(90deg,#6c4fcb,#a06fdd)';
+      document.getElementById('btnLogin').style.color  = '#fff';
+      document.getElementById('btnSignup').style.color = '#8a7f9a';
+      document.getElementById('loginForm').style.display  = '';
+      document.getElementById('signupForm').style.display = 'none';
+    } else {
+      slider.style.left       = (half + 4) + 'px';
+      slider.style.width      = half + 'px';
+      slider.style.background = 'linear-gradient(90deg,#d45fa0,#f09ac0)';
+      document.getElementById('btnLogin').style.color  = '#8a7f9a';
+      document.getElementById('btnSignup').style.color = '#fff';
+      document.getElementById('loginForm').style.display  = 'none';
+      document.getElementById('signupForm').style.display = '';
+      validateSignup();
+    }
+  }
+
+  const EYE_OPEN   = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  const EYE_CLOSED = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>'
+                   + '<path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+                   + '<line x1="1" y1="1" x2="23" y2="23"/>';
+
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    const svg = btn.querySelector('svg');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      svg.innerHTML = EYE_CLOSED;
+    } else {
+      inp.type = 'password';
+      svg.innerHTML = EYE_OPEN;
+    }
+  }
+
+  function setReq(reqId, iconId, ok, touched) {
+    const el = document.getElementById(reqId);
+    const ic = document.getElementById(iconId);
+    el.classList.remove('ok', 'fail');
+    ic.innerHTML = '';
+    if (!touched) return;
+    el.classList.add(ok ? 'ok' : 'fail');
+    ic.innerHTML = ok ? '✓' : '✕';
+  }
+
+  function validateLogin() {
+    const id = document.getElementById('loginId').value;
+    const pw = document.getElementById('loginPw').value;
+    document.getElementById('loginIdErr').textContent =
+      (id && !/^[a-zA-Z0-9@._+\-]+$/.test(id)) ? 'Only Latin characters allowed' : '';
+    document.getElementById('loginPwErr').textContent =
+      (pw && !/^[a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:,.<>?]+$/.test(pw)) ? 'Only Latin characters and special characters' : '';
+  }
+
+  function validateSignup() {
+    const user = document.getElementById('regUser').value;
+    const mail = document.getElementById('regMail').value;
+    const pw1  = document.getElementById('regPw1').value;
+    const pw2  = document.getElementById('regPw2').value;
+
+    document.getElementById('regUserErr').textContent =
+      (user && !/^[a-zA-Z0-9_]+$/.test(user)) ? 'Only Latin letters, digits and _ allowed' : '';
+
+    const mailRx = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    document.getElementById('regMailErr').textContent =
+      (mail && !mailRx.test(mail)) ? 'Enter a valid email address' : '';
+
+    const t       = pw1.length > 0;
+    const hasLen  = pw1.length >= 5;
+    const hasUp   = /[A-Z]/.test(pw1);
+    const isLatin = /^[a-zA-Z0-9!@#$%^&*()\-_=+\[\]{}|;:,.<>?]*$/.test(pw1);
+
+    setReq('req-len',   'ic-len',   hasLen,  t);
+    setReq('req-upper', 'ic-upper', hasUp,   t);
+    setReq('req-latin', 'ic-latin', isLatin, t);
+
+    const matchEl = document.getElementById('matchMsg');
+    if (pw2.length > 0) {
+      matchEl.textContent = pw1 === pw2 ? 'Passwords match' : 'Passwords do not match';
+      matchEl.style.color = pw1 === pw2 ? '#16a05a' : '#e04070';
+    } else {
+      matchEl.textContent = '';
+    }
+  }
+
+  window.addEventListener('load', () => {
+    const wrap = document.getElementById('toggleWrap');
+    const slider = document.getElementById('toggleSlider');
+    const half = (wrap.offsetWidth - 8) / 2;
+    slider.style.left       = '4px';
+    slider.style.width      = half + 'px';
+    slider.style.background = 'linear-gradient(90deg,#6c4fcb,#a06fdd)';
+    document.getElementById('btnLogin').style.color  = '#fff';
+    document.getElementById('btnSignup').style.color = '#8a7f9a';
+  });
+</script>
+</body>
+</html>
